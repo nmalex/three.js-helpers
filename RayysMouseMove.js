@@ -148,7 +148,7 @@ class RayysMouseMove {
       }
     };
 
-    mouse.subscribe(
+    this.mouse.subscribe(
       handleMouseDown.bind(this),
       handleMouseMove.bind(this),
       handleMouseUp.bind(this));
