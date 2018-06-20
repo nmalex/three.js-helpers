@@ -1,8 +1,7 @@
 class RayysMouseMove {
 
   constructor(rayysMouse, controls) {
-    this.renderer = renderer;
-    this.camera = camera;
+    this.camera = rayysMouse.camera;
 
     this.mouse = rayysMouse;
     this.controls = controls || this.mouse.controls;
