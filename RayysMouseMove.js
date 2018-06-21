@@ -15,7 +15,8 @@ class RayysMouseMove {
       onBeforeStart: [], //callbacks here may return false to prevent operation
       onPreviewObjectMove: [], //callbacks here may return alternative position
       onObjectMove: [],
-      onObjectReleased: []
+      onObjectReleased: [],
+      onVoidClick: []
     };
     this.raycaster = new THREE.Raycaster();
 
@@ -63,6 +64,10 @@ class RayysMouseMove {
         this.pickedObj = undefined;
         this.objStartPos = undefined;
         this.tranlsationMatrix = undefined;
+
+        for (let i = 0; i < this.cb.onVoidClick.length; i++) {
+          this.cb.onVoidClick[i](this);
+        }
       }
     };
 
