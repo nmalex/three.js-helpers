@@ -59,8 +59,8 @@ class RayysMouse {
   }
 
   updateMouseCoords(event) {
-    this.rawCoords.x = (event.clientX - this.renderer.domElement.offsetLeft + 0.5);
-    this.rawCoords.y = (event.clientY - this.renderer.domElement.offsetTop + 0.5);
+    this.rawCoords.x = event.clientX;
+    this.rawCoords.y = event.clientY;
     this.mouse.x = ((event.clientX - this.renderer.domElement.offsetLeft + 0.5) / window.innerWidth) * 2 - 1;
     this.mouse.y = -((event.clientY - this.renderer.domElement.offsetTop + 0.5) / window.innerHeight) * 2 + 1;
   }
