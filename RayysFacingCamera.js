@@ -41,7 +41,8 @@ class RayysFacingCamera {
 	
     for (var k = 0; k < this.dirs.length; k++) {
       var dot = this.dirs[k].dot(this.dirVector);
-      if (dot > -Math.PI / 2 && dot < Math.PI / 2) {
+      var angle = Math.acos(dot);
+      if (angle > -Math.PI / 2 && angle < Math.PI / 2) {
 	this.facingDirs.push(k);
 	if (oldFacingDirs.indexOf(k) === -1) {
 	  facingDirsChanged = true;
