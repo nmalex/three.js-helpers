@@ -21,6 +21,7 @@ class RayysMouse {
       this.prevMouse = this.mouse.clone();
       this.updateMouseCoords(event, this.mouse);
       this.mouseDown = this.mouse.clone();
+      this.rawMouseDown = this.rawCoords.clone();
 
       // notify subscribers
       for (var i=0; i<this.cb.onMouseDown.length; i++) {
@@ -32,6 +33,7 @@ class RayysMouse {
       this.prevMouse = this.mouse.clone();
       this.updateMouseCoords(event);
       this.mouseDown = undefined;
+      this.rawMouseDown = undefined;
 
       if (this.controls) {
         this.controls.enablePan = false;
