@@ -5,6 +5,7 @@ class RayysMouse {
     this.controls = controls;
 
     this.mouse = new THREE.Vector2();
+    this.rawCoords = new THREE.Vector2();
 
     this.cb = {}
     this.cb.onMouseDown = [];
@@ -12,16 +13,16 @@ class RayysMouse {
     this.cb.onMouseMove = [];
 
     var onMouseDown = function(event) {
-    	if (this.controls) {
-				this.controls.enablePan = false;
-				this.controls.enableRotate = false;
+      if (this.controls) {
+        this.controls.enablePan = false;
+        this.controls.enableRotate = false;
       }
 
       this.prevMouse = this.mouse.clone();
       this.updateMouseCoords(event, this.mouse);
       this.mouseDown = this.mouse.clone();
 
-			// notify subscribers
+      // notify subscribers
       for (var i=0; i<this.cb.onMouseDown.length; i++) {
       	this.cb.onMouseDown[i](this.mouse, this);
       }
@@ -29,12 +30,12 @@ class RayysMouse {
 
     var onMouseUp = function(event) {
       this.prevMouse = this.mouse.clone();
-      this.updateMouseCoords(event, this.mouse);
+      this.updateMouseCoords(event);
       this.mouseDown = undefined;
 
-    	if (this.controls) {
-				this.controls.enablePan = false;
-				this.controls.enableRotate = false;
+      if (this.controls) {
+        this.controls.enablePan = false;
+        this.controls.enableRotate = false;
       }
       
       for (var i=0; i<this.cb.onMouseUp.length; i++) {
@@ -44,9 +45,9 @@ class RayysMouse {
 
     var onMouseMove = function(event) {
       this.prevMouse = this.mouse.clone();
-      this.updateMouseCoords(event, this.mouse);
+      this.updateMouseCoords(event);
       if (!this.prevMouse.equals(this.mouse)) {
-				for (var i=0; i<this.cb.onMouseUp.length; i++) {
+        for (var i=0; i<this.cb.onMouseUp.length; i++) {
           this.cb.onMouseMove[i](this.mouse, this);
         }
       }
@@ -57,13 +58,15 @@ class RayysMouse {
     renderer.domElement.addEventListener('mouseup',   onMouseUp.bind(this),   false);
   }
 
-  updateMouseCoords(event, coordsObj) {
-    coordsObj.x = ((event.clientX - this.renderer.domElement.offsetLeft + 0.5) / window.innerWidth) * 2 - 1;
-    coordsObj.y = -((event.clientY - this.renderer.domElement.offsetTop + 0.5) / window.innerHeight) * 2 + 1;
+  updateMouseCoords(event) {
+    this.rawCoords.x = (event.clientX - this.renderer.domElement.offsetLeft + 0.5);
+    this.rawCoords.y = (event.clientY - this.renderer.domElement.offsetTop + 0.5);
+    this.mouse.x = ((event.clientX - this.renderer.domElement.offsetLeft + 0.5) / window.innerWidth) * 2 - 1;
+    this.mouse.y = -((event.clientY - this.renderer.domElement.offsetTop + 0.5) / window.innerHeight) * 2 + 1;
   }
   
   subscribe(mouseDownHandler, mouseMoveHandler, mouseUpHandler) {
-  	this.cb.onMouseDown.push(mouseDownHandler);
+    this.cb.onMouseDown.push(mouseDownHandler);
     this.cb.onMouseMove.push(mouseMoveHandler);
     this.cb.onMouseUp.push(mouseUpHandler);
   }
