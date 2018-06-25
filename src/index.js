@@ -50,12 +50,20 @@ decorator.decorators.children = function(object) {
   ]
 };
 
+var snaps = new RayysSnap(0.5);
+snaps.targets.push(new THREE.Vector3(0,0,0), new THREE.Vector3(1,0,0));
+snaps.actors.push(new RayysGridSnapActor(1,1,1));
+
 mouseMove.cb.onBeforeStart.push(function(obj) {
 	decorator.reset();
 	decorator.decorate(obj);
 });
 mouseMove.cb.onVoidClick.push(function() {
 	decorator.reset();
+});
+mouseMove.cb.onPreviewObjectMove.push(function(obj, pos, sender) {
+  let res = snaps.snap(obj, pos);
+  return res;
 });
 
 var animate = function() {
