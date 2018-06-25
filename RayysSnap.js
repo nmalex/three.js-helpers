@@ -8,6 +8,10 @@ class RayysSnap {
     snap(obj, previewValue) {
         for (let i=0; i<this.actors.length; i++) {
             let actor = this.actors[i];
+            let res = actor.snap( obj, previewValue, undefined, this.threshold );
+            if (res !== false) {
+                return res;
+            }
             for (let j=0; j<this.targets.length; j++) {
                 let res = actor.snap( obj, previewValue, this.targets[j], this.threshold );
                 if (res !== false) {
