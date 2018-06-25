@@ -1,10 +1,10 @@
 class RayysBBoxGeometry {
     create(bbox, color) {
-        if (color === undefined) color = 0x000000;
+      if (color === undefined) color = 0x000000;
   
       var node = new THREE.Object3D();
   
-          var geom = new THREE.Geometry();
+      var geom = new THREE.Geometry();
   
       var dx = (bbox.max.x - bbox.min.x);
       var dy = (bbox.max.y - bbox.min.y);
