@@ -222,6 +222,8 @@ var prevAngle;
 var endAngle;
 var totalRotation;
 
+var turnCount = 0;
+
 var mouse = new RayysMouse(renderer, camera);
 var raycaster = new THREE.Raycaster();
 mouse.subscribe(
@@ -242,6 +244,7 @@ mouse.subscribe(
       endAngle = startAngle;
       prevAngle = startAngle;
       totalRotation = 0.0;
+      turnCount = 0;
 
       console.log(startAngle);
     }
@@ -262,9 +265,23 @@ mouse.subscribe(
       let v2 = pickPoint1.clone().sub(gizmo.position).normalize();
       prevAngle = endAngle;
       endAngle = getAngle(v2, zeroAngleDir, translationPlane.normal);
+
       let da = (endAngle - prevAngle);
+
+      if (da < -Math.PI) {
+        da += 2*Math.PI;
+        turnCount ++;
+        console.log("jump!");
+      }
+
+      if (da > Math.PI) {
+        da -= 2*Math.PI;
+        turnCount --;
+        console.log("jump!");
+      }
+
       totalRotation += da;
-      console.log(`prevAngle=${prevAngle}, endAngle=${endAngle}, da=${da}, totalRotation=${totalRotation}`);
+      console.log(`c=${turnCount}, prevAngle=${prevAngle}, endAngle=${2*Math.PI * turnCount + endAngle}, da=${da}, totalRotation=${totalRotation}`);
 
       if (gizmoArc) {
         gizmo.remove(gizmoArc);
