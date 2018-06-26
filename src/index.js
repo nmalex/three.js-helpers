@@ -107,19 +107,25 @@ var startSeg = new THREE.LineSegments(geom, new THREE.LineBasicMaterial({
   color: 0x000000
 }));
 startSeg.name = "startSeg";
-gizmo.add(startSeg);
+// gizmo.add(startSeg);
 
 var points_geom = new THREE.Geometry();
 points_geom.vertices.push(new THREE.Vector3(0,0,0));
 points_geom.vertices.push(new THREE.Vector3(0,0,0));
 var points = new THREE.Points( points_geom, new THREE.PointsMaterial({ color: 0x00ffff, size: 0.15 }) );
-scene.add(points);
+// scene.add(points);
+
+var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+var material = new THREE.MeshPhongMaterial( {color: 0x00ff00} );
+var cube = new THREE.Mesh( geometry, material );
+cube.applyMatrix(new THREE.Matrix4().makeTranslation(0,1,0));
+scene.add( cube );
 
 //angle arc
 var makeGizmoArc = function(from, to, isClockwise) {
   let curve = new THREE.EllipseCurve(
     0,  0,            // ax, aY
-    1,  1,            // xRadius, yRadius
+    radius*0.9,  radius*0.9,  // xRadius, yRadius
     from,  to,        // aStartAngle, aEndAngle
     isClockwise,      // aClockwise
     0                 // aRotation
@@ -177,15 +183,12 @@ var pickCircle = function(pos) {
         zeroAngleDir.set(1,0,0);
         translationPlane.setFromNormalAndCoplanarPoint ( new THREE.Vector3(0,1,0), gizmo.position );
       } else if (line === ellipseY) {
-        zeroAngleDir.set(0,1,0);
+        zeroAngleDir.set(1,0,0);
         translationPlane.setFromNormalAndCoplanarPoint ( new THREE.Vector3(0,0,1), gizmo.position );
       } else if (line === ellipseZ) {
-        zeroAngleDir.set(0,0,1);
+        zeroAngleDir.set(0,0,-1);
         translationPlane.setFromNormalAndCoplanarPoint ( new THREE.Vector3(1,0,0), gizmo.position );
       }
-
-      // let target = new THREE.Vector3();
-      // raycaster.ray.intersectPlane ( translationPlane, target );
 
       controls.enabled = false;
       return intersects[0].point;
@@ -239,8 +242,8 @@ mouse.subscribe(
       startSeg.geometry.vertices[1].copy(pickPoint0.clone().sub(gizmo.position));
       startSeg.geometry.verticesNeedUpdate = true;
 
-      let v2 = pickPoint0.clone().sub(gizmo.position).normalize();
-      startAngle = getAngle(v2, zeroAngleDir, translationPlane.normal);
+      let v = pickPoint0.clone().sub(gizmo.position).normalize();
+      startAngle = getAngle(v, zeroAngleDir, translationPlane.normal);
       endAngle = startAngle;
       prevAngle = startAngle;
       totalRotation = 0.0;
@@ -262,35 +265,35 @@ mouse.subscribe(
       startSeg.geometry.vertices[3].copy(pickPoint1.clone().sub(gizmo.position));
       startSeg.geometry.verticesNeedUpdate = true;
 
-      let v2 = pickPoint1.clone().sub(gizmo.position).normalize();
+      let v = pickPoint1.clone().sub(gizmo.position).normalize();
       prevAngle = endAngle;
-      endAngle = getAngle(v2, zeroAngleDir, translationPlane.normal);
+      endAngle = getAngle(v, zeroAngleDir, translationPlane.normal);
 
-      let da = (endAngle - prevAngle);
+      let angleIncrement = (endAngle - prevAngle);
 
-      if (da < -Math.PI) {
-        da += 2*Math.PI;
+      if (angleIncrement < -Math.PI) {
+        angleIncrement += 2*Math.PI;
         turnCount ++;
-        console.log("jump!");
       }
 
-      if (da > Math.PI) {
-        da -= 2*Math.PI;
+      if (angleIncrement > Math.PI) {
+        angleIncrement -= 2*Math.PI;
         turnCount --;
-        console.log("jump!");
       }
 
-      totalRotation += da;
-      console.log(`c=${turnCount}, prevAngle=${prevAngle}, endAngle=${2*Math.PI * turnCount + endAngle}, da=${da}, totalRotation=${totalRotation}`);
+      totalRotation += angleIncrement;
+      console.log(`turnCount=${turnCount}, rotation=${totalRotation}`);
 
       if (gizmoArc) {
         gizmo.remove(gizmoArc);
       }
-      gizmoArc = makeGizmoArc(startAngle, endAngle, totalRotation < 0);
+      if (Math.abs(totalRotation) < 2*Math.PI) {
+        gizmoArc = makeGizmoArc(startAngle, endAngle, totalRotation < 0);
+      } else {
+        gizmoArc = makeGizmoArc(0, 2*Math.PI, false);
+      }
       gizmoArc.lookAt(translationPlane.normal);
       gizmo.add(gizmoArc);
-
-      // console.log(startAngle, " => ", endAngle);
     }
   },
   function(pos) {
