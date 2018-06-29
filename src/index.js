@@ -29,6 +29,8 @@ var spotLight = new THREE.SpotLight(0xffffff, 2.5, 25, Math.PI / 6);
 spotLight.position.set(4, 10, 7);
 scene.add(spotLight);
 
+var snaps = new RayysSnap(0.5);
+
 var colors = new RayysWebColors();
 for (let k=0; k<10; k++) {
   var size = 0.35;
@@ -42,6 +44,8 @@ for (let k=0; k<10; k++) {
   cube.applyMatrix(new THREE.Matrix4().makeTranslation(-2 + 4*Math.random(), 0, -2 + 4*Math.random()));
   scene.add(cube);
   mouseMove.objects.push(cube);
+  var targetsObj = snaps.add(cube);
+  scene.add(targetsObj);
 }
 
 var bboxFactory = new RayysBBoxGeometry();
@@ -56,9 +60,6 @@ decorator.decorators.children = function(object) {
   ]
 };
 
-var snaps = new RayysSnap(0.5);
-snaps.actors.push(new RayysGridSnapActor(1,1,1));
-
 mouseMove.cb.onBeforeStart.push(function(obj) {
 	decorator.reset();
 	decorator.decorate(obj);
@@ -69,6 +70,12 @@ mouseMove.cb.onVoidClick.push(function() {
 mouseMove.cb.onPreviewObjectMove.push(function(obj, pos, sender) {
   let res = snaps.snap(obj, pos);
   return res;
+});
+mouseMove.cb.onObjectMove.push(function(obj, pos, sender) {
+  let oldTargetsNode = snaps.getTargetsNode(obj);
+  let newTargetsNode = snaps.update(obj);
+  scene.remove(oldTargetsNode);
+  scene.add(newTargetsNode);
 });
 
 var animate = function() {

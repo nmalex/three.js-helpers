@@ -125,6 +125,7 @@ class RayysMouseMove {
 
         // update snap planes for this object
         this.pickedObj.position.copy(newObjectPosition);
+        this.pickedObj.updateMatrix ();
 
         // let subscribers know that object was moved
         for (let i = 0; i < this.cb.onObjectMove.length; i++) {

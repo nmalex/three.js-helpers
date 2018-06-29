@@ -15,8 +15,50 @@ class SnapTarget {
 
     }
 
-    getNode() {
-        // todo: create scene node to visualize snap points, lines and planes
+    getNode(addPoints, addLines, addPlanes) {
+        let node = new THREE.Object3D();
+
+        if (addPoints === undefined || addPoints) {
+            //This will add a starfield to the background of a scene
+            let pointsGeometry = new THREE.Geometry();
+            for (let i = 0; i < this.points.length; i ++ ) {
+                pointsGeometry.vertices.push( this.points[i].clone() );
+            }
+
+            let material = new THREE.PointsMaterial( { color: 0x888888, size: 0.1 } );
+            let pointsObj = new THREE.Points( pointsGeometry, material );
+            node.add( pointsObj );
+        }
+
+        if (addLines === undefined || addLines) {
+            let material = new THREE.LineBasicMaterial({
+                color: 0x0000ff
+            });
+            
+            let linesGeometry = new THREE.Geometry();
+            for (let i = 0; i < this.lines.length; i ++ ) {
+                let line = this.lines[i];
+                let dir = line.end.clone().sub(line.start).normalize();
+                linesGeometry.vertices.push(
+                    line.start.clone().sub(dir),
+                    line.end.clone().add(dir)
+                );
+            }
+            
+            let line = new THREE.LineSegments( linesGeometry, material );
+            node.add( line );
+        }
+
+        if (addPlanes === undefined || addPlanes) {
+
+            for (let i = 0; i < this.planes.length; i ++ ) {
+                let plane = this.planes[i];
+                let helper = new THREE.PlaneHelper( plane, 1, 0xffff00 );
+                node.add( helper );
+            }
+        }
+
+        return node;
     }
 }
 
@@ -29,19 +71,21 @@ class BBoxSnapFactory {
     // creates snap target for given scene object
     create(obj, snapToPivot, snapToPoints, snapToLines, snapToPlanes, snapToMidlines, snapToMidplanes) {
         var snapTarget = new SnapTarget();
-        update(obj, snapTarget, snapToPivot, snapToPoints, snapToLines, snapToPlanes, snapToMidlines, snapToMidplanes);
+        this.update(obj, snapTarget, snapToPivot, snapToPoints, snapToLines, snapToPlanes, snapToMidlines, snapToMidplanes);
         return snapTarget;
     }
 
     update(obj, snapTargetRef, snapToPivot, snapToPoints, snapToLines, snapToPlanes, snapToMidlines, snapToMidplanes) {
-        if (obj.boundingBox === undefined) {
-            obj.computeBoundingBox();
+        if (!obj.geometry.boundingBox) {
+            obj.geometry.computeBoundingBox();
         }
-        var bbox = obj.boundingBox;
+        var bbox = obj.geometry.boundingBox.clone();
+        bbox.applyMatrix4(obj.matrix);
 
         snapTargetRef.points.length = 0;
         snapTargetRef.lines.length = 0;
         snapTargetRef.planes.length = 0;
+        snapTargetRef.localMatrix = obj.matrix.clone();
 
         var points = snapTargetRef.points;
         if (snapToPivot) {
@@ -193,9 +237,35 @@ class RayysSnap {
         this.objects = [ ];
         // this is a collection of id => targets, where as id is scene object id, and targets are this object's targets
         this.targets = { };
+        this.targetNodes = { };
 
         // which snap factory should be used to generate targets?
         this.factory = new BBoxSnapFactory();
+    }
+
+    add(obj) {
+        this.objects.push( obj );
+        var targets = this.factory.create(obj, true, true, true, true, true, true) ;
+        this.targets[ obj.id ] = targets;
+
+        let node = targets.getNode();
+        this.targetNodes [ obj.id ] = node;
+        return node;
+    }
+
+    update(obj) {
+        this.factory.update(obj, this.targets[ obj.id ], true, true, true, true, true, true) ;
+        let node = this.targets[ obj.id ].getNode();
+        this.targetNodes [ obj.id ] = node;
+        return node;
+    }
+
+    getTargets(obj) {
+        return this.targets [ obj.id ];
+    }
+
+    getTargetsNode(obj) {
+        return this.targetNodes [ obj.id ];
     }
 
     // this will return snapped object position for the object being manipulated and raw object position
