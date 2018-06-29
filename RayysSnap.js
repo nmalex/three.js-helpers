@@ -4,6 +4,7 @@
 // 3. Plane - plane in world space
 class SnapTarget {
     constructor() {
+        this.localMatrix = new THREE.Matrix4();
         this.points = [];
         this.lines = [];
         this.planes = [];
@@ -11,8 +12,27 @@ class SnapTarget {
 
     // try to snap this targets to given snap target, using given snap actor
     // and if it snaps - return Vector3 of the desired snap object offset AND snapped point, line or plane
-    snap(other, actor, isTwoSided) {
+    snap(previewOffset, other, actor, isTwoSided) {
+        if (actor.canSnapPoints) {
+            for (let i=0; i<this.points.length; i++) {
+                let point = this.points[i];
+                let previewPos = point.clone().add(previewOffset);
 
+                for (let j=0; j<other.points.length; j++) {
+                    let targetPos = other.points[j];
+                    let snappedPos = actor.snap( null, previewPos, targetPos );
+                    if (snappedPos) {
+                        console.log(`Snap ${JSON.stringify(previewPos)} to ${JSON.stringify(snappedPos)}`);
+                    }
+                }
+            }
+        }
+        if (actor.canSnapLines) {
+
+        }
+        if (actor.canSnapPlanes) {
+
+        }
     }
 
     getNode(addPoints, addLines, addPlanes) {
@@ -71,6 +91,7 @@ class BBoxSnapFactory {
     // creates snap target for given scene object
     create(obj, snapToPivot, snapToPoints, snapToLines, snapToPlanes, snapToMidlines, snapToMidplanes) {
         var snapTarget = new SnapTarget();
+        snapTarget.localMatrix.copy( obj.matrix );
         this.update(obj, snapTarget, snapToPivot, snapToPoints, snapToLines, snapToPlanes, snapToMidlines, snapToMidplanes);
         return snapTarget;
     }
@@ -85,7 +106,7 @@ class BBoxSnapFactory {
         snapTargetRef.points.length = 0;
         snapTargetRef.lines.length = 0;
         snapTargetRef.planes.length = 0;
-        snapTargetRef.localMatrix = obj.matrix.clone();
+        snapTargetRef.localMatrix.copy( obj.matrix );
 
         var points = snapTargetRef.points;
         if (snapToPivot) {
@@ -231,7 +252,7 @@ class RayysSnap {
         this.threshold = threshold;
 
         // which snap actors you want to use?
-        this.actors = [ ];
+        this.actors = [ new RayysPointSnapActor(0.05) ];
 
         // which objects you want to snap to each other?
         this.objects = [ ];
@@ -271,10 +292,21 @@ class RayysSnap {
     // this will return snapped object position for the object being manipulated and raw object position
     snap(obj, previewPos) {
 
+        let activeTarget = this.targets[ obj.id ];
+        let activeActor = this.actors[ 0 ]; // default one
+        let isTwoSided = true;
+
+        let previewOffset = previewPos.clone().sub(obj.position);
+
+        for (let targetId in this.targets) {
+            if (targetId == obj.id) continue; //skip self
+            let other = this.targets[ targetId ];
+            activeTarget.snap(previewOffset, other, activeActor, isTwoSided);
+        }
     }
 
     // todo: rework it
-    snap(objectSnaps, previewValue) {
+    /* snap(objectSnaps, previewValue) {
         for (let i=0; i<this.actors.length; i++) {
             let actor = this.actors[i];
 
@@ -294,12 +326,19 @@ class RayysSnap {
             }
         }
         return false;
-    }
+    } */
 }
 
 class RayysPointSnapActor {
-    snap( obj, previewPos, targetPos, threshold ) {
-        if (previewPos.distanceTo(targetPos) < threshold) {
+    constructor(threshold) {
+        this.threshold = threshold;
+        this.canSnapPoints = true;
+        this.canSnapLines = false;
+        this.canSnapPlanes = false;
+    }
+
+    snap( obj, previewPos, targetPos ) {
+        if (previewPos.distanceTo(targetPos) < this.threshold) {
             return targetPos;
         }
         return false;

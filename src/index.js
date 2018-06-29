@@ -32,7 +32,7 @@ scene.add(spotLight);
 var snaps = new RayysSnap(0.5);
 
 var colors = new RayysWebColors();
-for (let k=0; k<10; k++) {
+for (let k=0; k<3; k++) {
   var size = 0.35;
   var geometry = new THREE.BoxGeometry(2*size, size, 3*size);
   var material = new THREE.MeshPhongMaterial({
