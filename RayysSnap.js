@@ -8,6 +8,10 @@ var vectorsEqual = function(v1, v2, eps) {
          && Math.abs(v1.z - v2.z) < eps ;
 }
 
+var isZero = function(val, eps) {
+    return Math.abs(val) < eps;
+}
+
 // snap target may be of 1 of 3 types:
 // 1. Vector3 - point in world space
 // 2. Line - line in world space
@@ -34,7 +38,7 @@ class SnapTarget {
                     let targetPos = other.points[j];
                     let snapOffs = actor.snap( null, previewPos, targetPos );
                     if (snapOffs && !vectorsEqual(zeroSnap, snapOffs, 1e-6)) {
-                        console.log(`Snap points ${JSON.stringify(previewPos)} to ${JSON.stringify(snapOffs)}`);
+                        // console.log(`Snap points ${JSON.stringify(previewPos)} to ${JSON.stringify(snapOffs)}`);
                         return snapOffs;
                     }
                 }
@@ -49,7 +53,7 @@ class SnapTarget {
                     let targetLine = other.lines[j];
                     let snapOffs = actor.snap( null, previewLine, targetLine );
                     if (snapOffs && !vectorsEqual(zeroSnap, snapOffs, 1e-6)) {
-                        console.log(`Snap lines ${JSON.stringify(previewLine)} to ${JSON.stringify(snapOffs)}`);
+                        // console.log(`Snap lines ${JSON.stringify(previewLine)} to ${JSON.stringify(snapOffs)}`);
                         return snapOffs;
                     }
                 }
@@ -64,7 +68,7 @@ class SnapTarget {
                     let targetPlane = other.planes[j];
                     let snapOffs = actor.snap( null, previewPlane, targetPlane );
                     if (snapOffs && !vectorsEqual(zeroSnap, snapOffs, 1e-6)) {
-                        console.log(`Snap planes ${JSON.stringify(previewPlane)} to ${JSON.stringify(snapOffs)}`);
+                        // console.log(`Snap planes ${JSON.stringify(previewPlane)} to ${JSON.stringify(snapOffs)}`);
                         return snapOffs;
                     }
                 }
@@ -291,9 +295,9 @@ class RayysSnap {
 
         // which snap actors you want to use?
         this.actors = [ 
-            //new RayysPointSnapActor(0.2),
+            new RayysPointSnapActor(0.2),
             new RayysLineSnapActor(0.2),
-            //new RayysPlaneSnapActor(0.2, true)
+            new RayysPlaneSnapActor(0.2, true)
         ];
 
         // which objects you want to snap to each other?
@@ -334,13 +338,22 @@ class RayysSnap {
     // this will return snapped object position for the object being manipulated and raw object position
     snap(obj, previewPos) {
 
-        let activeTarget = this.targets[ obj.id ];
+        let objTargets = this.targets[ obj.id ];
 
         let previewOffset = previewPos.clone().sub(obj.position);
-        let aggregatedSnapOffs = {
-            point: undefined,
-            line: undefined,
-            plane: undefined
+        let snapInfo = {
+            point: {
+                snapped: { x: false, y: false, z: false },
+                offset: undefined
+            },
+            line: {
+                snapped: { x: false, y: false, z: false },
+                offset: undefined
+            },
+            plane: {
+                snapped: { x: false, y: false, z: false },
+                offset: undefined
+            }
         };
 
         for (let actorId in this.actors) {
@@ -348,31 +361,48 @@ class RayysSnap {
 
             for (let targetId in this.targets) {
                 if (targetId == obj.id) continue; //skip self
+
                 let other = this.targets[ targetId ];
-                let snapOffs = activeTarget.snap(previewOffset, other, activeActor);
+                let snapOffs = objTargets.snap(previewOffset, other, activeActor);
+
                 if (snapOffs) {
-                    if (aggregatedSnapOffs[activeActor.type] === undefined) {
-                        aggregatedSnapOffs[activeActor.type] = snapOffs;
+                    if (snapInfo[activeActor.type].offset === undefined) {
+                        snapInfo[activeActor.type].offset = snapOffs;
+                        snapInfo[activeActor.type].snapped.x = !isZero(snapOffs.x, 1e-6);
+                        snapInfo[activeActor.type].snapped.y = !isZero(snapOffs.y, 1e-6);
+                        snapInfo[activeActor.type].snapped.z = !isZero(snapOffs.z, 1e-6);
                     } else {
-                        aggregatedSnapOffs[activeActor.type].add(snapOffs);
+                        // snap offset may accumulate, when you snap to the numerous matching targets
+                        if (!isZero(snapOffs.x, 1e-6) && !snapInfo[activeActor.type].snapped.x) {
+                            snapInfo[activeActor.type].offset.x += snapOffs.x;
+                            snapInfo[activeActor.type].snapped.x = true;
+                        }
+                        if (!isZero(snapOffs.y, 1e-6) && !snapInfo[activeActor.type].snapped.y) {
+                            snapInfo[activeActor.type].offset.y += snapOffs.y;
+                            snapInfo[activeActor.type].snapped.y = true;
+                        }
+                        if (!isZero(snapOffs.z, 1e-6) && !snapInfo[activeActor.type].snapped.z) {
+                            snapInfo[activeActor.type].offset.z += snapOffs.z;
+                            snapInfo[activeActor.type].snapped.z = true;
+                        }
                     }
                 }
             }
         }
 
         // now see priority, point will override all other snaps
-        if (aggregatedSnapOffs["point"]) {
-            return previewPos.clone().add(aggregatedSnapOffs["point"]);
+        if (snapInfo["point"].offset) {
+            return previewPos.clone().add(snapInfo["point"].offset);
         }
 
         // line snap will override plane snap
-        if (aggregatedSnapOffs["line"]) {
-            return previewPos.clone().add(aggregatedSnapOffs["line"]);
+        if (snapInfo["line"].offset) {
+            return previewPos.clone().add(snapInfo["line"].offset);
         }
 
         // plane snap is least restrictive, goes the last
-        if (aggregatedSnapOffs["plane"]) {
-            return previewPos.clone().add(aggregatedSnapOffs["plane"]);
+        if (snapInfo["plane"].offset) {
+            return previewPos.clone().add(snapInfo["plane"].offset);
         }
 
         return undefined;
