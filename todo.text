@@ -1,0 +1,26 @@
+1. Blade Server examination
+2. Car Engine examination
+
+Move object by mouse, limit movements (present some server rack)
+also present existing cisterns and boxes.
+
+Tooltip display
+Object rectangular selection
+Custom translation/rotation/scale gizmos
+
+Import animated FBX and present playback control (make paid widget?)
+Import OBJ/STL and rotate + Loading progress indicator + XUpload script (make paid widget?)
+
+Dimensions for object bbox (resize-able by mouse drag and by text input)
+Morph animation (3ds max exporter for animated geometry)
+Snaps to point, line and plane.
+Restrict movements. Move objects inside the given 3d volume, 3d box, rectangle, 2D shape or given line (arc?) segment.
+
+Measurement tools (show size, weight, area of the model)
+Linear ruler tool (measure distance)
+
+Palette load (make paid widget?)
+
+websockets <--> mobile app demo
+
+also staircase generator
