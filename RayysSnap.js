@@ -1,3 +1,13 @@
+var makeTranslationFromVector = function(offs) {
+    return new THREE.Matrix4().makeTranslation(offs.x, offs.y, offs.z);
+};
+
+var vectorsEqual = function(v1, v2, eps) {
+    return  Math.abs(v1.x - v2.x) < eps 
+         && Math.abs(v1.y - v2.y) < eps 
+         && Math.abs(v1.z - v2.z) < eps ;
+}
+
 // snap target may be of 1 of 3 types:
 // 1. Vector3 - point in world space
 // 2. Line - line in world space
@@ -12,7 +22,9 @@ class SnapTarget {
 
     // try to snap this targets to given snap target, using given snap actor
     // and if it snaps - return Vector3 of the desired snap object offset AND snapped point, line or plane
-    snap(previewOffset, other, actor, isTwoSided) {
+    snap(previewOffset, other, actor) {
+        let zeroSnap = new THREE.Vector3();
+
         if (actor.canSnapPoints) {
             for (let i=0; i<this.points.length; i++) {
                 let point = this.points[i];
@@ -20,17 +32,43 @@ class SnapTarget {
 
                 for (let j=0; j<other.points.length; j++) {
                     let targetPos = other.points[j];
-                    let snappedPos = actor.snap( null, previewPos, targetPos );
-                    if (snappedPos) {
-                        console.log(`Snap ${JSON.stringify(previewPos)} to ${JSON.stringify(snappedPos)}`);
+                    let snapOffs = actor.snap( null, previewPos, targetPos );
+                    if (snapOffs && !vectorsEqual(zeroSnap, snapOffs, 1e-6)) {
+                        console.log(`Snap points ${JSON.stringify(previewPos)} to ${JSON.stringify(snapOffs)}`);
+                        return snapOffs;
                     }
                 }
             }
         }
         if (actor.canSnapLines) {
+            for (let i=0; i<this.lines.length; i++) {
+                let line = this.lines[i];
+                let previewLine = line.clone().applyMatrix4( makeTranslationFromVector(previewOffset) );
 
+                for (let j=0; j<other.lines.length; j++) {
+                    let targetLine = other.lines[j];
+                    let snapOffs = actor.snap( null, previewLine, targetLine );
+                    if (snapOffs && !vectorsEqual(zeroSnap, snapOffs, 1e-6)) {
+                        console.log(`Snap lines ${JSON.stringify(previewLine)} to ${JSON.stringify(snapOffs)}`);
+                        return snapOffs;
+                    }
+                }
+            }
         }
         if (actor.canSnapPlanes) {
+            for (let i=0; i<this.planes.length; i++) {
+                let plane = this.planes[i];
+                let previewPlane = plane.clone().applyMatrix4( makeTranslationFromVector(previewOffset) );
+
+                for (let j=0; j<other.planes.length; j++) {
+                    let targetPlane = other.planes[j];
+                    let snapOffs = actor.snap( null, previewPlane, targetPlane );
+                    if (snapOffs && !vectorsEqual(zeroSnap, snapOffs, 1e-6)) {
+                        console.log(`Snap planes ${JSON.stringify(previewPlane)} to ${JSON.stringify(snapOffs)}`);
+                        return snapOffs;
+                    }
+                }
+            }
 
         }
     }
@@ -252,7 +290,11 @@ class RayysSnap {
         this.threshold = threshold;
 
         // which snap actors you want to use?
-        this.actors = [ new RayysPointSnapActor(0.05) ];
+        this.actors = [ 
+            //new RayysPointSnapActor(0.2),
+            new RayysLineSnapActor(0.2),
+            //new RayysPlaneSnapActor(0.2, true)
+        ];
 
         // which objects you want to snap to each other?
         this.objects = [ ];
@@ -293,45 +335,56 @@ class RayysSnap {
     snap(obj, previewPos) {
 
         let activeTarget = this.targets[ obj.id ];
-        let activeActor = this.actors[ 0 ]; // default one
-        let isTwoSided = true;
 
         let previewOffset = previewPos.clone().sub(obj.position);
+        let aggregatedSnapOffs = {
+            point: undefined,
+            line: undefined,
+            plane: undefined
+        };
 
-        for (let targetId in this.targets) {
-            if (targetId == obj.id) continue; //skip self
-            let other = this.targets[ targetId ];
-            activeTarget.snap(previewOffset, other, activeActor, isTwoSided);
-        }
-    }
+        for (let actorId in this.actors) {
+            let activeActor = this.actors[ actorId ]; // select snap actor
 
-    // todo: rework it
-    /* snap(objectSnaps, previewValue) {
-        for (let i=0; i<this.actors.length; i++) {
-            let actor = this.actors[i];
-
-            // try to snap to the world, here procedural snaps may apply, 
-            // like grid snap which does not require specific targets
-            let res = actor.snap( objectSnaps, previewValue, undefined, this.threshold );
-            if (res !== false) {
-                return res;
-            }
-
-            // next try to check given snaps with existing snap targets
-            for (let j=0; j<this.targets.length; j++) {
-                let res = actor.snap( objectSnaps, previewValue, this.targets[j], this.threshold );
-                if (res !== false) {
-                    return res;
+            for (let targetId in this.targets) {
+                if (targetId == obj.id) continue; //skip self
+                let other = this.targets[ targetId ];
+                let snapOffs = activeTarget.snap(previewOffset, other, activeActor);
+                if (snapOffs) {
+                    if (aggregatedSnapOffs[activeActor.type] === undefined) {
+                        aggregatedSnapOffs[activeActor.type] = snapOffs;
+                    } else {
+                        aggregatedSnapOffs[activeActor.type].add(snapOffs);
+                    }
                 }
             }
         }
-        return false;
-    } */
+
+        // now see priority, point will override all other snaps
+        if (aggregatedSnapOffs["point"]) {
+            return previewPos.clone().add(aggregatedSnapOffs["point"]);
+        }
+
+        // line snap will override plane snap
+        if (aggregatedSnapOffs["line"]) {
+            return previewPos.clone().add(aggregatedSnapOffs["line"]);
+        }
+
+        // plane snap is least restrictive, goes the last
+        if (aggregatedSnapOffs["plane"]) {
+            return previewPos.clone().add(aggregatedSnapOffs["plane"]);
+        }
+
+        return undefined;
+    }
 }
 
 class RayysPointSnapActor {
     constructor(threshold) {
         this.threshold = threshold;
+
+        this.type = "point";
+
         this.canSnapPoints = true;
         this.canSnapLines = false;
         this.canSnapPlanes = false;
@@ -339,18 +392,72 @@ class RayysPointSnapActor {
 
     snap( obj, previewPos, targetPos ) {
         if (previewPos.distanceTo(targetPos) < this.threshold) {
-            return targetPos;
+            return targetPos.clone().sub(previewPos);
         }
         return false;
     }
 }
 
 class RayysLineSnapActor {
+    constructor(threshold) {
+        this.threshold = threshold;
 
+        this.type = "line";
+
+        this.canSnapPoints = false;
+        this.canSnapLines = true;
+        this.canSnapPlanes = false;
+    }
+
+    snap( obj, previewLine, targetLine ) {
+        // this has to be perf improved
+        let previewDir = (previewLine.end.clone().sub( previewLine.start )).normalize();
+        let targetDir = (targetLine.end.clone().sub( targetLine.start )).normalize();
+
+        if (!vectorsEqual(previewDir, targetDir, 1e-6)) {
+            return false;
+        }
+
+        let closestPoint = new THREE.Vector3();
+        targetLine.closestPointToPoint ( previewLine.start, false, closestPoint );
+
+        if (closestPoint.distanceTo(previewLine.start) < this.threshold) {
+            return closestPoint.sub(previewLine.start);
+        }
+        return false;
+    }
 }
 
 class RayysPlaneSnapActor {
+    constructor(threshold, snapBackfacing) {
+        this.threshold = threshold;
+        this.snapBackfacing = snapBackfacing || false;
 
+        this.type = "plane";
+
+        this.canSnapPoints = false;
+        this.canSnapLines = false;
+        this.canSnapPlanes = true;
+    }
+
+    snap( obj, previewPlane, targetPlane ) {
+
+        let canSnap =                 vectorsEqual(previewPlane.normal, targetPlane.normal, 1e-6) 
+            || this.snapBackfacing && vectorsEqual(previewPlane.normal, targetPlane.normal.clone().negate(), 1e-6);
+
+        if (!canSnap) return false;
+
+        let targetPoint = new THREE.Vector3();
+        targetPlane.coplanarPoint ( targetPoint );
+
+        let previewPoint = new THREE.Vector3();
+        previewPlane.projectPoint ( targetPoint, previewPoint )
+
+        if (Math.abs(targetPoint.distanceTo(previewPoint)) < this.threshold) {
+            return targetPoint.sub(previewPoint);
+        }
+        return false;
+    }
 }
 
 class RayysGridSnapActor {

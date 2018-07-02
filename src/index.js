@@ -78,6 +78,12 @@ mouseMove.cb.onObjectMove.push(function(obj, pos, sender) {
   scene.add(newTargetsNode);
 });
 
+document.toggle = function(mode) {
+  mouseMove.toggle(mode);
+  $(".mode").removeClass("active");
+  $(`#move-${mode}`).addClass("active");
+}
+
 var animate = function() {
   requestAnimationFrame(animate);
   controls.update();

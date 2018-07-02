@@ -5,6 +5,15 @@
     <link rel="stylesheet" href="main.css">
 </head>
 <body>
+    <div id="toolbar">
+        <div id="move-x" class="mode" onmouseup="toggle('x')">X</div>
+        <div id="move-y" class="mode" onmouseup="toggle('y')">Y</div>
+        <div id="move-z" class="mode" onmouseup="toggle('z')">Z</div>
+        <div id="move-xy" class="mode" onmouseup="toggle('xy')">XY</div>
+        <div id="move-yz" class="mode" onmouseup="toggle('yz')">YZ</div>
+        <div id="move-xz" class="mode active" onmouseup="toggle('xz')">XZ</div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/93/three.js"></script>
     <script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>

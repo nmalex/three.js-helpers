@@ -5,4 +5,29 @@ body {
     margin: 0;
     padding: 0;
   }
-  
+  #toolbar {
+    position: fixed;
+    left: 1px;
+    top: 1px;
+  }
+  #toolbar > div {
+    float: left;
+  }
+  .mode {
+    min-width: 16px;
+    padding: 4px;
+    margin: 1px;
+    text-align: center;
+    background-color: rgba(255,255,255,0.25);
+  }
+  .mode:hover {
+    cursor: pointer;
+    background-color: rgba(255,255,255,0.75);
+  }
+  .mode:active {
+    background-color: yellowgreen;
+  }
+  .mode.active {
+    color: white;
+    background-color: green;
+  }
