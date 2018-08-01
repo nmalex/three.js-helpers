@@ -102,7 +102,8 @@ class RayysLinearDimension {
             this.raycaster.setFromCamera(textPos, this.camera);
             var intersects = this.raycaster.intersectObjects( scene.children, true );
             if (intersects.length > 0) {
-                let originDist = origin.distanceTo(this.camera.position)
+                let wsOrigin = origin.applyMatrix4(this.node.matrix);
+                let originDist = wsOrigin.distanceTo(this.camera.position);
                 if (intersects[ 0 ].distance < originDist) {
                     if (intersects[ 0 ].object.parent === this.node) {
                     } else {
