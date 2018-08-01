@@ -104,7 +104,10 @@ class RayysLinearDimension {
             if (intersects.length > 0) {
                 let originDist = origin.distanceTo(this.camera.position)
                 if (intersects[ 0 ].distance < originDist) {
-                    console.log("Hey, dim label is not visible", this);
+                    if (intersects[ 0 ].object.parent === this.node) {
+                    } else {
+                        console.log("Hey, dim label is not visible", this);
+                    }
                 }
             }
 
