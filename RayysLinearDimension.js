@@ -8,6 +8,14 @@ class RayysLinearDimension {
         this.cb = {
             onChange: []
         };
+        this.config = {
+            headLength: 0.5,
+            headWidth: 0.35,
+            units: "mm",
+            unitsConverter: function(v) {
+                return v;
+            }
+        };
     }
 
     create(p0, p1, extrude) {
@@ -24,7 +32,7 @@ class RayysLinearDimension {
         el.classList.add("dim");
         el.style.left = "100px";
         el.style.top = "100px";
-        el.innerHTML = "34.09";
+        el.innerHTML = `${this.config.unitsConverter(p0.distanceTo(p1)).toFixed(2)}${this.config.untis}`;
         this.domRoot.appendChild(el);
         this.domElement = el;
 
@@ -72,11 +80,11 @@ class RayysLinearDimension {
 
         var length = pmax.distanceTo(pmin) / 2;
         var hex = 0x0;
-        var arrowHelper0 = new THREE.ArrowHelper(dir, origin, length, hex, 0.5, 0.35);
+        var arrowHelper0 = new THREE.ArrowHelper(dir, origin, length, hex, this.config.headLength, this.config.headWidth);
         this.node.add(arrowHelper0);
 
         dir.negate();
-        var arrowHelper1 = new THREE.ArrowHelper(dir, origin, length, hex, 0.5, 0.35);
+        var arrowHelper1 = new THREE.ArrowHelper(dir, origin, length, hex, this.config.headLength, this.config.headWidth);
         this.node.add(arrowHelper1);
 
         // reposition label
@@ -84,9 +92,9 @@ class RayysLinearDimension {
             let textPos = origin.project(this.camera);
             // console.log(textPos);
 
-            let clientX = this.renderer.domElement.offsetWidth * (textPos.x + 1) / 2 - 0.5 + this.renderer.domElement.offsetLeft;
+            let clientX = this.renderer.domElement.offsetWidth * (textPos.x + 1) / 2 - this.config.headLength + this.renderer.domElement.offsetLeft;
 
-            let clientY = -this.renderer.domElement.offsetHeight * (textPos.y - 1) / 2 - 0.5 + this.renderer.domElement.offsetTop;
+            let clientY = -this.renderer.domElement.offsetHeight * (textPos.y - 1) / 2 - this.config.headLength + this.renderer.domElement.offsetTop;
 
             let dimWidth = this.domElement.offsetWidth;
             let dimHeight = this.domElement.offsetHeight;
