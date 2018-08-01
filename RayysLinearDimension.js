@@ -101,8 +101,9 @@ class RayysLinearDimension {
             
             let wsOrigin = origin.clone();
             wsOrigin.applyMatrix4(this.node.matrix);
+            let dirToDimOrigin = (wsOrigin.clone().sub(this.camera.position)).normalize();
 
-            this.raycaster.set(this.camera.position, wsOrigin.clone().sub(this.camera.position) );
+            this.raycaster.set(this.camera.position, dirToDimOrigin );
             var intersects = this.raycaster.intersectObjects( scene.children, true );
             if (intersects.length > 0) {
                 let originDist = wsOrigin.distanceTo(this.camera.position);
