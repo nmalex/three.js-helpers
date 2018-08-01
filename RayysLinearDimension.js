@@ -74,8 +74,6 @@ class RayysLinearDimension {
                 extrude.z > -1e-16 ? extrude.z + Math.max(p0.z, p1.z) : pmax.z);
         }
         
-        this.domElement.innerHTML = `${this.config.unitsConverter(pmin.distanceTo(pmax)).toFixed(2)}${this.config.units}`;
-
         var origin = pmax.clone().add(pmin).multiplyScalar(0.5);
         var dir = pmax.clone().sub(pmin);
         dir.normalize();
@@ -92,7 +90,6 @@ class RayysLinearDimension {
         // reposition label
         if (this.domElement !== undefined) {
             let textPos = origin.project(this.camera);
-            // console.log(textPos);
 
             let clientX = this.renderer.domElement.offsetWidth * (textPos.x + 1) / 2 - this.config.headLength + this.renderer.domElement.offsetLeft;
 
@@ -103,6 +100,8 @@ class RayysLinearDimension {
 
             this.domElement.style.left = `${clientX - dimWidth/2}px`;
             this.domElement.style.top = `${clientY - dimHeight/2}px`;
+            
+            this.domElement.innerHTML = `${this.config.unitsConverter(pmin.distanceTo(pmax)).toFixed(2)}${this.config.units}`;
         }
     }
 
