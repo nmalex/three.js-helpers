@@ -1,9 +1,10 @@
 class RayysLinearDimension {
 
-    constructor(domRoot, renderer, camera) {
+    constructor(domRoot, renderer, camera, raycaster) {
         this.domRoot = domRoot;
         this.renderer = renderer;
         this.camera = camera;
+        this.raycaster = raycaster;
 
         this.cb = {
             onChange: []
@@ -94,11 +95,20 @@ class RayysLinearDimension {
 
         // reposition label
         if (this.domElement !== undefined) {
+            
             let textPos = origin.project(this.camera);
 
             let clientX = this.renderer.domElement.offsetWidth * (textPos.x + 1) / 2 - this.config.headLength + this.renderer.domElement.offsetLeft;
-
             let clientY = -this.renderer.domElement.offsetHeight * (textPos.y - 1) / 2 - this.config.headLength + this.renderer.domElement.offsetTop;
+            
+            this.raycaster.setFromCamera( new THREE.Vector2(clientX, clientY) , this.camera );
+            var intersects = raycaster.intersectObjects( scene.children );
+            if (intersects.length > 0) {
+                let originDist = origin.distanceTo(this.camera.position)
+                if (intersects[ 0 ].distance < originDist) {
+                    console.log("Hey, dim label is not visible", this);
+                }
+            }
 
             let dimWidth = this.domElement.offsetWidth;
             let dimHeight = this.domElement.offsetHeight;
