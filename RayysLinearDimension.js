@@ -89,7 +89,7 @@ class RayysLinearDimension {
         
         var material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
         var geometry0 = new THREE.Geometry();
-        geometry0.vertices.push(pfrom, pmin, pto, pmax);
+        geometry0.vertices.push(p0, pmin, p1, pmax);
         this.node.add(new THREE.LineSegments( geometry0, material ));
 
         // reposition label
