@@ -42,7 +42,7 @@ class RayysLinearDimension {
         return this.node;
     }
 
-    update(camera) {
+    update(scene, camera) {
         this.camera = camera;
 
         // re-create arrow
@@ -102,7 +102,7 @@ class RayysLinearDimension {
             let clientY = -this.renderer.domElement.offsetHeight * (textPos.y - 1) / 2 - this.config.headLength + this.renderer.domElement.offsetTop;
             
             this.raycaster.setFromCamera( new THREE.Vector2(clientX, clientY) , this.camera );
-            var intersects = this.raycaster.intersectObjects( scene.children );
+            var intersects = this.raycaster.intersectObjects( scene.children, true );
             if (intersects.length > 0) {
                 let originDist = origin.distanceTo(this.camera.position)
                 if (intersects[ 0 ].distance < originDist) {
