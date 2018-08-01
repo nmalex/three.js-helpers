@@ -32,7 +32,7 @@ class RayysLinearDimension {
         el.classList.add("dim");
         el.style.left = "100px";
         el.style.top = "100px";
-        el.innerHTML = `${this.config.unitsConverter(p0.distanceTo(p1)).toFixed(2)}${this.config.units}`;
+        el.innerHTML = "";
         this.domRoot.appendChild(el);
         this.domElement = el;
 
@@ -73,6 +73,8 @@ class RayysLinearDimension {
                 extrude.y > -1e-16 ? extrude.y + Math.max(p0.y, p1.y) : pmax.y,
                 extrude.z > -1e-16 ? extrude.z + Math.max(p0.z, p1.z) : pmax.z);
         }
+        
+        this.domElement.innerHTML = `${this.config.unitsConverter(pmin.distanceTo(pmax)).toFixed(2)}${this.config.units}`;
 
         var origin = pmax.clone().add(pmin).multiplyScalar(0.5);
         var dir = pmax.clone().sub(pmin);
