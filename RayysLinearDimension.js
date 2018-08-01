@@ -32,7 +32,7 @@ class RayysLinearDimension {
         el.classList.add("dim");
         el.style.left = "100px";
         el.style.top = "100px";
-        el.innerHTML = `${this.config.unitsConverter(p0.distanceTo(p1)).toFixed(2)}${this.config.untis}`;
+        el.innerHTML = `${this.config.unitsConverter(p0.distanceTo(p1)).toFixed(2)}${this.config.units}`;
         this.domRoot.appendChild(el);
         this.domElement = el;
 
