@@ -37,8 +37,6 @@ class RayysLinearDimension {
         this.domRoot.appendChild(el);
         this.domElement = el;
 
-        this.update(this.camera);
-
         return this.node;
     }
 
