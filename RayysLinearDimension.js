@@ -73,7 +73,7 @@ class RayysLinearDimension {
                 extrude.y > -1e-16 ? extrude.y + Math.max(p0.y, p1.y) : pmax.y,
                 extrude.z > -1e-16 ? extrude.z + Math.max(p0.z, p1.z) : pmax.z);
         }
-        
+
         var origin = pmax.clone().add(pmin).multiplyScalar(0.5);
         var dir = pmax.clone().sub(pmin);
         dir.normalize();
@@ -86,6 +86,11 @@ class RayysLinearDimension {
         dir.negate();
         var arrowHelper1 = new THREE.ArrowHelper(dir, origin, length, hex, this.config.headLength, this.config.headWidth);
         this.node.add(arrowHelper1);
+        
+        var material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
+        var geometry0 = new THREE.Geometry();
+        geometry0.vertices.push(pfrom, pmin, pto, pmax);
+        this.node.add(new THREE.LineSegments( geometry0, material ));
 
         // reposition label
         if (this.domElement !== undefined) {
