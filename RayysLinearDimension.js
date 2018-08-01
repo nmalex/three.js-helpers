@@ -99,7 +99,7 @@ class RayysLinearDimension {
             let clientX = this.renderer.domElement.offsetWidth * (textPos.x + 1) / 2 - this.config.headLength + this.renderer.domElement.offsetLeft;
             let clientY = -this.renderer.domElement.offsetHeight * (textPos.y - 1) / 2 - this.config.headLength + this.renderer.domElement.offsetTop;
             
-            this.raycaster.setFromCamera( new THREE.Vector2(clientX, clientY) , this.camera );
+            this.raycaster.setFromCamera(textPos, this.camera);
             var intersects = this.raycaster.intersectObjects( scene.children, true );
             if (intersects.length > 0) {
                 let originDist = origin.distanceTo(this.camera.position)
