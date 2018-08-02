@@ -98,16 +98,16 @@ class RayysLinearDimension {
         // reposition label
         if (this.domElement !== undefined) {
             
-            let textPos = origin.project(this.camera);
+            let wsOrigin = origin.clone();
+            let textPos = wsOrigin.project(this.camera);
 
             let clientX = this.renderer.domElement.offsetWidth * (textPos.x + 1) / 2 - this.config.headLength + this.renderer.domElement.offsetLeft;
             let clientY = -this.renderer.domElement.offsetHeight * (textPos.y - 1) / 2 - this.config.headLength + this.renderer.domElement.offsetTop;
             
-            let wsOrigin = origin.clone();
-            wsOrigin.applyMatrix4(this.node.matrix);
-            let dirToDimOrigin = (wsOrigin.clone().sub(this.camera.position)).normalize();
+            // wsOrigin.applyMatrix4(this.node.matrix);
+            // let dirToDimOrigin = (wsOrigin.clone().sub(this.camera.position)).normalize();
 
-            this.raycaster.set(this.camera.position, dirToDimOrigin );
+            /* this.raycaster.set(this.camera.position, dirToDimOrigin );
             var intersects = this.raycaster.intersectObjects( scene.children, true );
             if (intersects.length > 0) {
                 let originDist = wsOrigin.distanceTo(this.camera.position);
@@ -117,7 +117,7 @@ class RayysLinearDimension {
                         console.log("Hey, dim label is not visible", this);
                     }
                 }
-            }
+            } */
 
             let dimWidth = this.domElement.offsetWidth;
             let dimHeight = this.domElement.offsetHeight;
