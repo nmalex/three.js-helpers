@@ -15,7 +15,8 @@ class RayysLinearDimension {
             units: "mm",
             unitsConverter: function(v) {
                 return v;
-            }
+            },
+            color: 0x000000
         };
     }
 
@@ -81,15 +82,16 @@ class RayysLinearDimension {
         var hex = 0x0;
         var arrowHelper0 = new THREE.ArrowHelper(dir, origin, length, hex, this.config.headLength, this.config.headWidth);
         this.node.add(arrowHelper0);
-
+        
         dir.negate();
         var arrowHelper1 = new THREE.ArrowHelper(dir, origin, length, hex, this.config.headLength, this.config.headWidth);
         this.node.add(arrowHelper1);
-        
-        var material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
+
         var geometry0 = new THREE.Geometry();
-        geometry0.vertices.push(p1, pmin, p0, pmax);
-        this.node.add(new THREE.LineSegments( geometry0, material ));
+        geometry0.vertices.push(pmax, pmax.clone().add(extrude));
+        geometry0.vertices.push(pmin, pmin.clone().add(extrude));
+        
+        this.node.add(new THREE.LineSegments( geometry0, new THREE.LineBasicMaterial( { color: this.config.color } ) ));
 
         // reposition label
         if (this.domElement !== undefined) {
