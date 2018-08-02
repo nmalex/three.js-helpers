@@ -12,6 +12,7 @@ class RayysLinearDimension {
         this.config = {
             headLength: 0.5,
             headWidth: 0.35,
+            backExtrude: 0.1,
             units: "mm",
             unitsConverter: function(v) {
                 return v;
@@ -88,8 +89,9 @@ class RayysLinearDimension {
         this.node.add(arrowHelper1);
 
         var geometry0 = new THREE.Geometry();
-        geometry0.vertices.push(pmax, pmax.clone().add(extrude));
-        geometry0.vertices.push(pmin, pmin.clone().add(extrude));
+        var backExtrude = (extrude.clone().normalize()).multiplyScalar(this.config.backExtrude);
+        geometry0.vertices.push(pmax.clone().add(backExtrude), pmax.clone().sub(extrude));
+        geometry0.vertices.push(pmin.clone().add(backExtrude), pmin.clone().sub(extrude));
         
         this.node.add(new THREE.LineSegments( geometry0, new THREE.LineBasicMaterial( { color: this.config.color } ) ));
 
