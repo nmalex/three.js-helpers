@@ -49,7 +49,7 @@ class RayysMouse {
       this.prevMouse = this.mouse.clone();
       this.updateMouseCoords(event);
       if (!this.prevMouse.equals(this.mouse)) {
-        for (var i=0; i<this.cb.onMouseUp.length; i++) {
+        for (var i=0; i<this.cb.onMouseMove.length; i++) {
           this.cb.onMouseMove[i](this.mouse, this);
         }
       }
