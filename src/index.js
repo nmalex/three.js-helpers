@@ -2,6 +2,7 @@
 import Demo from './Demo'
 import { RayysWebColorsDemo } from './RAYYS.WebColors.demo'
 import { RayysLinearDimensionDemo } from './RAYYS.LinearDimension.demo'
+import { RayysBox3HelperDemo } from './RAYYS.Box3Helper.demo'
 
 const params = (function getJsonFromUrl(url) {
     var query = url.substr(1);
@@ -20,6 +21,9 @@ switch (params.demo) {
         break;
     case 'RAYYS.LinearDimension':
         Demo.run(new RayysLinearDimensionDemo());
+        break;
+    case 'RAYYS.Box3Helper':
+        Demo.run(new RayysBox3HelperDemo());
         break;
     default:
         break;

@@ -1,4 +1,8 @@
-class RayysBBoxGeometry {
+'use strict';
+
+import * as THREE from 'three';
+
+export class RayysBox3Helper {
     create(bbox, color) {
       if (color === undefined) color = 0x000000;
   
@@ -102,7 +106,7 @@ class RayysBBoxGeometry {
       var line = new THREE.LineSegments(geom, new THREE.LineBasicMaterial({
         color: color
       }));
-      line.name = "bbox";
+      line.name = "rayysbox3helper";
       node.add(line);
   
       return node;
