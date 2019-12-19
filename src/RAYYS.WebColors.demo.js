@@ -1,7 +1,7 @@
 'use strict';
 
-import { RayysWebColors } from './RAYYS.WebColors'
 import * as THREE from 'three';
+import { RayysWebColors } from './RAYYS.WebColors'
 
 export class RayysWebColorsDemo {
     init(demo) {
