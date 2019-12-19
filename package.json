@@ -4,11 +4,11 @@
   "description": "three.js helpers and utilities",
   "main": "index.js",
   "dependencies": {
-    "webpack-dev-server": "^3.1.4"
+    "webpack-dev-server": "^3.10.0"
   },
   "devDependencies": {
-    "webpack": "^4.12.1",
-    "webpack-cli": "^3.0.8"
+    "webpack": "^4.41.4",
+    "webpack-cli": "^3.3.10"
   },
   "scripts": {
     "start:dev": "webpack-dev-server",
