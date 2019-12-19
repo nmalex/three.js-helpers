@@ -4,14 +4,16 @@
   "description": "three.js helpers and utilities",
   "main": "index.js",
   "dependencies": {
-    "webpack-dev-server": "^3.10.0"
+    "three": "^0.111.0"
   },
   "devDependencies": {
     "webpack": "^4.41.4",
-    "webpack-cli": "^3.3.10"
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.0"
   },
   "scripts": {
-    "start:dev": "webpack-dev-server",
+    "start": "webpack-dev-server",
+    "build": "node ./node_modules/webpack/bin/webpack.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
