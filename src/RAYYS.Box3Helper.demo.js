@@ -4,11 +4,16 @@ import * as THREE from 'three';
 import { RayysBox3Helper } from './RAYYS.Box3Helper'
 
 export class RayysBox3HelperDemo {
-    init(demo) {
+    init({
+        scene,
+        camera,
+        renderer,
+        controls,
+    }) {
         const  geometry = new THREE.BoxBufferGeometry( 5, 2, 7.49 );
         const  material = new THREE.MeshBasicMaterial( {color: 0x64c951} );
         const  cube = new THREE.Mesh( geometry, material );
-        demo.scene.add( cube );
+        scene.add( cube );
 
         const  geo = new THREE.WireframeGeometry( geometry );
         const  mat = new THREE.LineBasicMaterial( { color: 0x10af10, linewidth: 2 } );

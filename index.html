@@ -4,46 +4,76 @@
   <title>three.js - helpers</title>
   <style>
     body {
-      font-family: Verdana, sans-serif;
+        font-family: Verdana, sans-serif;
     }
     canvas {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: -1;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: -1;
     }
     .dim {
-      position: absolute;
-      font-family: Verdana, sans-serif;
-      font-size: 10pt;
-      background-color: rgba(255,255,255,0.75);
-      padding: 2px 10px;
-      pointer-events: none;
+        position: absolute;
+        font-family: Verdana, sans-serif;
+        font-size: 10pt;
+        background-color: rgba(255,255,255,0.75);
+        padding: 2px 10px;
+        pointer-events: none;
+    }
+    .tooltip {
+        position: fixed;
+        left: 0;
+        top: 0;
+        min-width: 10px;
+        text-align: center;
+        padding: 3px 7px;
+        font-family: monospace;
+        font-size: 9pt;
+        background: #a0c020;
+        display: block;
+        opacity: 0;
+        border: 0px solid transparent;
+        box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.75);
+        transition: opacity 0.25s linear;
+        border-radius: 2px;
+        cursor: default;
+    }
+    .tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: #a0c020 transparent transparent transparent;
+        cursor: default;
     }
     .output {
-      position: absolute;
-      top: 48vh;
-      left: 30vw;
-      font-family: Verdana, sans-serif;
-      font-size: 10pt;
-      background-color: rgba(255,255,255,0.75);
-      pointer-events: none;
+        position: absolute;
+        top: 48vh;
+        left: 30vw;
+        font-family: Verdana, sans-serif;
+        font-size: 10pt;
+        background-color: rgba(255,255,255,0.75);
+        pointer-events: none;
     }
   </style>
 </head>
 <body>
-  <h1>three.js helpers</h1>
-  <a href="/?demo=RAYYS.WebColors">WebColors</a><br />
-  <a href="/?demo=RAYYS.LinearDimension">LinearDimension</a><br />
-  <a href="/?demo=RAYYS.Box3Helper">Box3Helper</a><br />
-  <a href="/?demo=RAYYS.Mouse">Mouse</a><br />
-  <a href="/?demo=RAYYS.MouseMove">MouseMove</a><br />
-  <a href="/?demo=RAYYS.FacingCamera">FacingCamera</a><br />
-  <a href="/?demo=RAYYS.ObjectDecorator">ObjectDecorator</a><br />
-  <a href="/?demo=RAYYS.RotationGizmo">RotationGizmo</a><br />
+    <h1>three.js helpers</h1>
+    <a href="/?demo=RAYYS.WebColors">WebColors</a><br />
+    <a href="/?demo=RAYYS.LinearDimension">LinearDimension</a><br />
+    <a href="/?demo=RAYYS.Box3Helper">Box3Helper</a><br />
+    <a href="/?demo=RAYYS.Mouse">Mouse</a><br />
+    <a href="/?demo=RAYYS.MouseMove">MouseMove</a><br />
+    <a href="/?demo=RAYYS.FacingCamera">FacingCamera</a><br />
+    <a href="/?demo=RAYYS.ObjectDecorator">ObjectDecorator</a><br />
+    <a href="/?demo=RAYYS.RotationGizmo">RotationGizmo</a><br />
+    <a href="/?demo=RAYYS.Tooltip">Tooltip</a><br />
 
-  <script src="./dist/bundle.js"></script>
+    <script src="./dist/bundle.js"></script>
 </body>
 </html>

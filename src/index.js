@@ -8,6 +8,7 @@ import { RayysMouseMoveDemo } from './RAYYS.MouseMove.demo'
 import { RayysFacingCameraDemo } from './RAYYS.FacingCamera.demo'
 import { RayysObjectDecoratorDemo } from './RAYYS.ObjectDecorator.demo'
 import { RayysRotationGizmoDemo } from './RAYYS.RotationGizmo.demo'
+import { RayysTooltipDemo } from './RAYYS.Tooltip.demo'
 
 const params = getJsonFromUrl(window.location.search)
 
@@ -35,6 +36,9 @@ switch (params.demo) {
         break;
     case 'RAYYS.RotationGizmo':
         Demo.run(new RayysRotationGizmoDemo());
+        break;
+    case 'RAYYS.Tooltip':
+        Demo.run(new RayysTooltipDemo());
         break;
     default:
         break;
