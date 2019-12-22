@@ -5,6 +5,7 @@ import { RayysLinearDimensionDemo } from './RAYYS.LinearDimension.demo'
 import { RayysBox3HelperDemo } from './RAYYS.Box3Helper.demo'
 import { RayysMouseDemo } from './RAYYS.Mouse.demo'
 import { RayysMouseMoveDemo } from './RAYYS.MouseMove.demo'
+import { RayysFacingCameraDemo } from './RAYYS.FacingCamera.demo'
 
 const params = getJsonFromUrl(window.location.search)
 
@@ -23,6 +24,9 @@ switch (params.demo) {
         break;
     case 'RAYYS.MouseMove':
         Demo.run(new RayysMouseMoveDemo());
+        break;
+    case 'RAYYS.FacingCamera':
+        Demo.run(new RayysFacingCameraDemo());
         break;
     default:
         break;
