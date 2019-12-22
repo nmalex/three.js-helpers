@@ -11,6 +11,7 @@ export default class Demo {
         this.renderer = new THREE.WebGLRenderer({
             antialias: true,
         });
+        this.renderer.sortObjects = true;
         this.renderer.setSize( window.innerWidth, window.innerHeight );
         this.renderer.setClearColor(new THREE.Color(0xfefefe));
         this.renderer.setPixelRatio(window.devicePixelRatio);
