@@ -151,14 +151,17 @@ export class RayysMouseMove {
         this.controls.enableRotate = true;
       }
 
+      const leftObj = this.pickPoint;
       this.pickPoint = undefined;
       this.pickedObj = undefined;
       this.objStartPos = undefined;
       this.tranlsationMatrix = undefined;
 
       // let subscribers know that object was released by mouse (i.e. not moving anymore)
-      for (let i = 0; i < this.cb.onObjectReleased.length; i++) {
-        this.cb.onObjectReleased[i](leftObj, this);
+      if (leftObj) {
+        for (let i = 0; i < this.cb.onObjectReleased.length; i++) {
+          this.cb.onObjectReleased[i](leftObj, this);
+        }
       }
     };
 
