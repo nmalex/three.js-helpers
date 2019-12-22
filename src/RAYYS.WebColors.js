@@ -5,7 +5,7 @@ import * as THREE from 'three';
 export class RayysWebColors {
     constructor() {
         const colors = this.getColors();
-        const toThreeColor = color => new THREE.Color(color.r, color.g, color.b);
+        const toThreeColor = color => new THREE.Color(color.rgb.r / 256.0, color.rgb.g / 256.0, color.rgb.b / 256.0);
 
         this.getRandom = function() {
             const color = colors[Math.floor(colors.length * Math.random())];

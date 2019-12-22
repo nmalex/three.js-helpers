@@ -1,18 +1,22 @@
-class RayysObjectDecorator {
-	constructor() {
-  	// many different decorators may apply at this point,
+'use strict';
+
+import * as THREE from 'three';
+
+export class RayysObjectDecorator {
+    constructor() {
+    // many different decorators may apply at this point,
     // for example decorated obect may be:
     // 1. set color red,
     // 2. present own wireframe,
     // 3. have bounding box wrapper
     // 4. attached move/rotate/scale gizmo
-  	this.decorators = {
-    	material: undefined,
+    this.decorators = {
+      material: undefined,
       children: undefined
     };
     
     // collect decorated objects with info how to undecorate them
-  	this.decorated = {
+    this.decorated = {
     	material: {},
       children: {}
     };

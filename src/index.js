@@ -6,6 +6,7 @@ import { RayysBox3HelperDemo } from './RAYYS.Box3Helper.demo'
 import { RayysMouseDemo } from './RAYYS.Mouse.demo'
 import { RayysMouseMoveDemo } from './RAYYS.MouseMove.demo'
 import { RayysFacingCameraDemo } from './RAYYS.FacingCamera.demo'
+import { RayysObjectDecoratorDemo } from './RAYYS.ObjectDecorator.demo'
 
 const params = getJsonFromUrl(window.location.search)
 
@@ -27,6 +28,9 @@ switch (params.demo) {
         break;
     case 'RAYYS.FacingCamera':
         Demo.run(new RayysFacingCameraDemo());
+        break;
+    case 'RAYYS.ObjectDecorator':
+        Demo.run(new RayysObjectDecoratorDemo());
         break;
     default:
         break;
