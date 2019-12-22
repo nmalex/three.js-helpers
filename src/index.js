@@ -4,6 +4,7 @@ import { RayysWebColorsDemo } from './RAYYS.WebColors.demo'
 import { RayysLinearDimensionDemo } from './RAYYS.LinearDimension.demo'
 import { RayysBox3HelperDemo } from './RAYYS.Box3Helper.demo'
 import { RayysMouseDemo } from './RAYYS.Mouse.demo'
+import { RayysMouseMoveDemo } from './RAYYS.MouseMove.demo'
 
 const params = getJsonFromUrl(window.location.search)
 
@@ -19,6 +20,9 @@ switch (params.demo) {
         break;
     case 'RAYYS.Mouse':
         Demo.run(new RayysMouseDemo());
+        break;
+    case 'RAYYS.MouseMove':
+        Demo.run(new RayysMouseMoveDemo());
         break;
     default:
         break;
