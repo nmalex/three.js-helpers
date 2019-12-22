@@ -15,6 +15,7 @@ export class RayysMouseMove {
     this.cb = {
       onModeChanged: [],
       onObjectEnter: [],
+      onObjectHover: [],
       onObjectLeave: [],
       onBeforeStart: [], //callbacks here may return false to prevent operation
       onPreviewObjectMove: [], //callbacks here may return alternative position
@@ -80,11 +81,20 @@ export class RayysMouseMove {
         var intersects = this.raycaster.intersectObjects(this.objects);
 
         if (intersects.length > 0) {
-          this.hoveredObj = intersects[0].object;
+          if (!this.hoveredObj) {
+            this.hoveredObj = intersects[0].object;
 
-          // let subscribers know that object was hovered by mouse
-          for (let i = 0; i < this.cb.onObjectEnter.length; i++) {
-            this.cb.onObjectEnter[i](this.hoveredObj, this);
+            // let subscribers know that object was hovered by mouse
+            for (let i = 0; i < this.cb.onObjectEnter.length; i++) {
+              this.cb.onObjectEnter[i](this.hoveredObj, this);
+            }
+          } else {
+            this.hoveredObj = intersects[0].object;
+
+            // let subscribers know that object was hovered by mouse
+            for (let i = 0; i < this.cb.onObjectHover.length; i++) {
+              this.cb.onObjectHover[i](this.hoveredObj, this);
+            }
           }
         } else {
           if (this.hoveredObj) {
@@ -125,7 +135,7 @@ export class RayysMouseMove {
 
         // update snap planes for this object
         this.pickedObj.position.copy(newObjectPosition);
-        this.pickedObj.updateMatrix ();
+        this.pickedObj.updateMatrix();
 
         // let subscribers know that object was moved
         for (let i = 0; i < this.cb.onObjectMove.length; i++) {
@@ -216,3 +226,4 @@ export class RayysMouseMove {
     }
   }
 }
+
